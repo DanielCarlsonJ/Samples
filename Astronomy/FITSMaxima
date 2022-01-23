@@ -1,0 +1,30 @@
+# Sample of finding local intensity maxima from a FITS file.
+
+#read in fits file
+#turn into array
+
+s = fits.getdata('D:\\AST 376R\\sub.fits')
+print(s)
+
+#find max values
+max = np.amax(s)
+print(max)
+
+#locate max values
+from numpy import unravel_index
+maxindex = unravel_index(s.argmax(), s.shape)
+print(maxindex)
+
+#max 20 loop
+n = 0
+while n <=19:
+    print(n)
+    n += 1
+    max = np.partition(s.flatten(), -n)[-n]
+    print(max)
+    maxindex = np.argpartition(s, -n)[-n]
+    print(maxindex)
+    sort = maxindex[np.argsort(s[maxindex])]
+    print(sort)
+    idx = (-s).argsort(axis=-1)[:, :n]
+    print(idx)
