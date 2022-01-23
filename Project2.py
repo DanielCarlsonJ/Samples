@@ -1,12 +1,4 @@
-#  File: Project2.py
-#  Description: Project 2 Solution
-#  Student's Name: Daniel Carlson
-#  Student's UT EID: djc3839
-#  Course Name: CS 303E 
-#  Unique Number: 50180
-#
-#  Date Created: 5/6/2020
-#  Date Last Modified: 5/6/2020
+# A simple game in which you move around rooms and can pick up items that are stored.
 
 class Room:
 
@@ -131,14 +123,6 @@ def drop(item):
 def listInventory():
     global inventory
     print("   "+"\n   ".join(inventory))
-        
-        
-
-##########################################################################
-###     All code below this is given to you.  DO NOT EDIT IT unless    ###
-###     you need to adjust the indentation to match the indentation    ###
-###     of the rest of your code.                                      ###
-##########################################################################
         
 def loadMap():
 
