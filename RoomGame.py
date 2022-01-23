@@ -1,4 +1,4 @@
-# A simple game in which you move around rooms and can pick up items that are stored.
+# A simple game in which you can move around rooms and can pick up items.
 
 class Room:
 
