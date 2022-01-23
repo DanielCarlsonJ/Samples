@@ -1,0 +1,57 @@
+def init_centroids( df_data, k ):
+    return df_data.sample(n=k, random_state = 42).reset_index(drop=True)
+    
+# Testing our init centroid function
+df_centroids = init_centroids( df_kmeans, 7 )
+df_centroids
+
+def assign_to_centroid( df_data, df_centroids ):
+    closest_centroid = np.zeros(len(df_data))
+
+    for i in range(len(df_data)):
+        b = df_data.iloc[[i]].values
+        closest_centroid[i] = np.argmin(np.linalg.norm(df_centroids-b,axis = 1))
+    return pd.DataFrame(data = closest_centroid, columns = ['closest_centroid_index'])
+
+# Check how many data points were assigned to each centroid
+s_centroid_assignment = assign_to_centroid( df_kmeans, df_centroids )
+s_centroid_assignment.value_counts()
+
+def compute_centroids( df_data, s_centroid_assignment, k):
+    x,y = np.array([]), np.array([])
+    for i in range(k):
+        ind = list(np.where(s_centroid_assignment == i)[0])
+        m = np.mean(df_data.iloc[ind])
+        x,y = np.append(x,m['x']), np.append(y,m['y'])
+    return pd.DataFrame({'x':x,'y':y})
+    
+# Test it out
+df_new_centroids = compute_centroids( df_kmeans, s_centroid_assignment, 7)
+df_new_centroids
+
+def compare_centroids( df_centroid_a, df_centroid_b ):
+    return df_centroid_a.equals(df_centroid_b)
+    
+# Test it out, should print True followed by False
+print(compare_centroids( df_new_centroids, df_new_centroids ))
+print(compare_centroids( df_new_centroids, df_centroids ))
+
+def k_means( df_data, k ):
+    df_centroids = init_centroids(df_data, k)
+    s_centroid_assignment = assign_to_centroid(df_data, df_centroids)
+    df_new_centroids = compute_centroids(df_data, s_centroid_assignment, k)
+    while (compare_centroids(df_centroids, df_new_centroids) == False):
+        df_centroids = df_new_centroids.copy()
+        s_centroid_assignment = assign_to_centroid(df_data, df_centroids)
+        df_new_centroids = compute_centroids(df_data, s_centroid_assignment, k)
+    return s_centroid_assignment
+
+# Call k_means with k = 5 to test
+s_cluster_assignment = k_means( df_kmeans, 5)
+s_cluster_assignment.value_counts()
+
+# Plot each cluster
+plt.scatter(df_kmeans.x, df_kmeans.y, c=s_cluster_assignment.closest_centroid_index)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Kmeans Cluster Plot')
