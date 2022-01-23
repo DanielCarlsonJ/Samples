@@ -1,12 +1,4 @@
-#  File: MagicSquares.py
-#  Description: HW 13 Solution
-#  Student's Name: Daniel Carlson
-#  Student's UT EID: djc3839
-#  Course Name: CS 303E 
-#  Unique Number: 50180
-#
-#  Date Created: 4/23/2020
-#  Date Last Modified: 4/23/2020
+#  A simple magic square solver involving objects.
 
 class MagicSquare:
     def __init__(self,side):
