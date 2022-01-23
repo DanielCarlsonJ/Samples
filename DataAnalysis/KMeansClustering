@@ -1,3 +1,5 @@
+# Sample of a K-Means Clustering algorithm written from scratch
+
 def init_centroids( df_data, k ):
     return df_data.sample(n=k, random_state = 42).reset_index(drop=True)
     
