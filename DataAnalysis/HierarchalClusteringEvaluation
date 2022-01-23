@@ -1,0 +1,87 @@
+# Sample of a hierarchal clustering algorithm written from scratch with an evaluation at the end using the silhouette coefficient.
+
+# Plot the dendrogram for the Ward proximity measure
+Z_ward = linkage(df_X,'ward')
+fig_ward = plt.figure(figsize=(25,8))
+dn_ward = dendrogram(Z_ward, labels=s_states.values, leaf_font_size=15)
+plt.title('Dendrogram for Ward Function on Modified Voting Dataset', fontsize=15)
+plt.ylabel('Height', fontsize=15)
+plt.xlabel('State', fontsize=15)
+plt.show()
+
+# Plot the dendrogram for the min proximity measure
+Z_min = linkage(df_X,'single')
+fig_min = plt.figure(figsize=(25,8))
+dn_min = dendrogram(Z_min, labels=s_states.values, leaf_font_size=15)
+plt.title('Dendrogram for Min Function on Modified Voting Dataset', fontsize=15)
+plt.ylabel('Height', fontsize=15)
+plt.xlabel('State', fontsize=15)
+plt.show()
+
+# Plot the dendrogram for the Max proximity measure
+Z_max = linkage(df_X,'complete')
+fig_max = plt.figure(figsize=(25,8))
+dn_max = dendrogram(Z_max, labels=s_states.values, leaf_font_size=15)
+plt.title('Dendrogram for Max Function on Modified Voting Dataset', fontsize=15)
+plt.ylabel('Height', fontsize=15)
+plt.xlabel('State', fontsize=15)
+plt.show()
+
+# Calculate cophenetic correlation coefficient
+cpcc_ward, coph_dist_ward = cophenet(Z_ward, Y=pdist(df_X))
+cpcc_min, coph_dist_min = cophenet(Z_min, Y=pdist(df_X))
+cpcc_max, coph_dist_max = cophenet(Z_max, Y=pdist(df_X))
+# Show the results
+(cpcc_ward,cpcc_min,cpcc_max)
+
+# Find the centroids
+centroids = np.array([df_X.loc[s_states[s_states == 'Montana'].index[0]], df_X.loc[s_states[s_states == 'Arkansas'].index[0]], df_X.loc[s_states[s_states == 'Massachusetts'].index[0]], df_X.loc[s_states[s_states == 'Minnesota'].index[0]]])
+# Show the centroids
+centroids
+
+# Compute the k-means clusters and show the listing of the States in each cluster
+kmeans = KMeans(n_clusters=4, init=centroids, random_state=23).fit(df_X)
+cluster_arr = kmeans.labels_
+state_clusters = {}
+for i in range(4):
+  x = 0
+  for pt in cluster_arr:
+    if pt == i:
+      if i in state_clusters:
+        state_clusters[i].append(s_states[x])
+      else:
+        state_clusters[i] = [s_states[x]]
+    x += 1
+print(state_clusters)
+
+# Visualize the silhouette coefficients for each cluster
+range_n_clusters = list(set(kmeans.labels_))
+silhouette = silhouette_samples(df_X, kmeans.fit_predict(df_X))
+
+fig, ax1 = plt.subplots(1)
+
+cluster_labels = kmeans.fit_predict(df_X)
+silhouette_values = silhouette_samples(df_X, cluster_labels)
+y_lower = 10
+for i in list(set(kmeans.labels_)):
+  ith_cluster_silhouette_values = silhouette_values[cluster_labels == i]
+  ith_cluster_silhouette_values.sort()
+  size_cluster_i = ith_cluster_silhouette_values.shape[0]
+  y_upper = y_lower + size_cluster_i
+  color = plt.cm.nipy_spectral(float(i) / 4)
+  ax1.fill_betweenx(
+            np.arange(y_lower, y_upper),
+            0,
+            ith_cluster_silhouette_values,
+            facecolor=color,
+            edgecolor=color,
+            alpha=0.7,
+        )
+  ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+  y_lower = y_upper + 10
+outliers = np.where(silhouette < 0)
+for i in outliers:
+  print(s_states[i])
+
+# The graphs of the silhouette coefficient show how much a data point within a cluster is related to that cluster versus any other cluster.
+# A negative value means that the data point is more closely related to points in another cluster versus points in the one it is placed in by the algorithm.
